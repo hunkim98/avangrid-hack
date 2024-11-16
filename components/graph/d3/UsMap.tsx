@@ -29,11 +29,15 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
       usStatesTopoData as any,
       usStatesTopoData.objects['states'] as any
     )
+    const bbox = topojson.bbox(usStatesTopoData as any)
+    const topoWidth = bbox[2] - bbox[0]
+    const topoHeight = bbox[3] - bbox[1]
+    const scaleBy = Math.min(width, height)
     const center = d3.geoCentroid(geojson as any)
     const projection = d3
       .geoMercator()
       .center(center)
-      .scale(500)
+      .scale(scaleBy)
       .translate([width / 2, height / 2])
     const path = d3.geoPath().projection(projection)
     const bounds = path.bounds(geojson)
