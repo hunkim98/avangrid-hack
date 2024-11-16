@@ -76,19 +76,30 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
       .attr('fill', (d: any) => {
         const name = d.properties.name
         let rtoIndex = -1
+        let rtoExists = false
         for (let i = 0; i < RTO.length; i++) {
           if (RTO[i].includes(name)) {
             rtoIndex = i
+            rtoExists = true
             break
           }
         }
+        let color = 'white'
+        if (rtoIndex !== -1) {
+          color = colorScale(rtoIndex.toString()) as any
+        }
         if (filter.rtoIndex !== null) {
           if (filter.rtoIndex !== rtoIndex) {
-            return 'rgba(255,255,255,0.1)'
+            if (rtoIndex !== -1) {
+              color = 'rgba(0,0,0,0.1)'
+            } else {
+              color = 'white'
+            }
           } else {
-            return colorScale(rtoIndex.toString()) as any
+            color = colorScale(rtoIndex.toString()) as any
           }
         }
+        return color
         if (rtoIndex === -1) {
           return 'rgba(255,255,255,0.1)'
         } else {
