@@ -21,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
       header={{ height: HeaderHeight }}
       navbar={{
         width: 300,
-        breakpoint: 'sm',
+        breakpoint: 'md',
         collapsed: { mobile: !opened },
       }}
       padding="md"
@@ -31,8 +31,8 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
           <Burger
             opened={opened}
             onClick={toggle}
-            hiddenFrom="sm"
-            size="sm"
+            hiddenFrom="md"
+            size="lg"
             pos="absolute"
           ></Burger>
           <Flex
@@ -46,7 +46,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
           >
             <Title
               order={3}
-              visibleFrom="sm"
+              visibleFrom="md"
               style={{ cursor: 'pointer' }}
               onClick={() => {
                 router.push('/')
@@ -69,6 +69,19 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
             bg={currentRoute === '/' ? 'blue' : 'white'}
           >
             Dashboard
+          </Button>
+        </AppShell.Section>
+        <AppShell.Section w="100%">
+          <Button
+            component={Link}
+            href="/reference"
+            variant="subtle"
+            w="100%"
+            justify="flex-start"
+            color={currentRoute === '/reference' ? 'white' : 'blue'}
+            bg={currentRoute === '/reference' ? 'blue' : 'white'}
+          >
+            Reference
           </Button>
         </AppShell.Section>
         <AppShell.Section grow component={ScrollArea}></AppShell.Section>

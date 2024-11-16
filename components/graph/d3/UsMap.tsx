@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import usStatesTopoData from './us-states.json'
 import * as topojson from 'topojson-client'
+import { RTO, RTO_NAME } from '@/data/rto'
 import { Filter } from '@/types/filter'
 import * as d3 from 'd3'
 
@@ -19,6 +20,22 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
     y: 0,
     content: '',
   })
+
+  useEffect(() => {
+    // add escape key listener
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setFilter({
+          state: null,
+          rtoIndex: null,
+        })
+      }
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [])
 
   useEffect(() => {
     if (!svgRef.current) return
@@ -43,6 +60,12 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
     const bounds = path.bounds(geojson)
     const widthScale = (bounds[1][0] - bounds[0][0]) / width
     const heightScale = (bounds[1][1] - bounds[0][1]) / height
+    const fourColor = d3.scaleOrdinal(d3.schemeCategory10)
+    const colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow', 'pink']
+    const colorScale = d3
+      .scaleOrdinal()
+      .domain(RTO.map((_, i) => i.toString()))
+      .range(colors) // Colors to map to
 
     map
       .selectAll('path')
@@ -52,32 +75,77 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
       .attr('class', (d: any) => `province c${d.properties.code}`)
       .attr('fill', (d: any) => {
         const name = d.properties.name
-        if (filter.state && filter.state !== name) {
-          return 'rgba(255,255,255,0.1)'
+        let rtoIndex = -1
+        for (let i = 0; i < RTO.length; i++) {
+          if (RTO[i].includes(name)) {
+            rtoIndex = i
+            break
+          }
         }
-        return 'rgba(255,255,255,0.5)'
+        if (filter.rtoIndex !== null) {
+          if (filter.rtoIndex !== rtoIndex) {
+            return 'rgba(255,255,255,0.1)'
+          } else {
+            return colorScale(rtoIndex.toString()) as any
+          }
+        }
+        if (rtoIndex === -1) {
+          return 'rgba(255,255,255,0.1)'
+        } else {
+          return colorScale(rtoIndex.toString()) as any
+        }
       })
       .attr('stroke', 'rgba(0,0,0,0.2)')
       .attr('d', path as any)
       .on('click', (e, d: any) => {
-        setFilter({
-          ...filter,
-          state: d.properties.name,
-        })
+        const name = d.properties.name
+        let rtoIndex = -1
+        for (let i = 0; i < RTO.length; i++) {
+          if (RTO[i].includes(name)) {
+            rtoIndex = i
+            break
+          }
+        }
+        if (rtoIndex === -1) {
+          setFilter({
+            ...filter,
+            state: null,
+            rtoIndex: null,
+          })
+          return
+        } else {
+          setFilter({
+            ...filter,
+            state: name,
+            rtoIndex,
+          })
+        }
+        // setFilter({
+        //   ...filter,
+        //   state: d.properties.name,
+        // })
       })
       .on('mousemove', (e, d: any) => {
-        if (!d.properties.name) {
-          setTooltip((prev) => ({ ...prev, opacity: 0 }))
-          return
-        }
-        const [x, y] = d3.pointer(e)
-        const proj = projection(d3.geoCentroid(d))!
-        setTooltip({
-          opacity: 1,
-          x: proj[0],
-          y: proj[1],
-          content: `${d.properties.name}`,
-        })
+        // if (!d.properties.name) {
+        //   setTooltip((prev) => ({ ...prev, opacity: 0 }))
+        //   return
+        // }
+        // const name = d.properties.name
+        // let rtoIndex = -1
+        // for (let i = 0; i < RTO.length; i++) {
+        //   if (RTO[i].includes(name)) {
+        //     rtoIndex = i
+        //     break
+        //   }
+        // }
+        // const [x, y] = d3.pointer(e)
+        // const proj = projection(d3.geoCentroid(d))!
+        // setTooltip({
+        //   opacity: 1,
+        //   x: proj[0],
+        //   y: proj[1],
+        //   content: `${RTO_NAME[rtoIndex]}: ${name}`,
+        // })
       })
 
     svg.on('mouseleave', () => {
