@@ -1,6 +1,7 @@
 import Resizer from '@/components/graph/d3/Resizer'
 import { Flex, Select, Title } from '@mantine/core'
 import UsMap from '@/components/graph/d3/UsMap'
+import { MISO_REGION } from '@/data/region'
 import { Batteries } from '@/data/battery'
 import Layout from '@/components/Layout'
 import { Filter } from '@/types/filter'
@@ -23,11 +24,7 @@ const IndexPage: React.FC<IndexPageProps> = () => {
           </Flex>
           {filter.rtoIndex !== null && <Title>{RTO_NAME[filter.rtoIndex]}</Title>}
         </Flex>
-        <Select
-          label={'Industry Location'}
-          data={Batteries.map((val) => val.name)}
-          value={'None'}
-        />
+        <Select label={'Industry Location'} data={MISO_REGION} value={'None'} />
         <Select
           label={'Battery Storage Choice'}
           data={Batteries.map((val) => val.name)}
