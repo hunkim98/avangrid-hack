@@ -16,14 +16,6 @@ const IndexPage: React.FC<IndexPageProps> = () => {
   return (
     <Layout>
       <Flex direction={'column'} justify={'center'} gap={10}>
-        <Flex flex={1} h={400}>
-          <Flex direction={'column'} flex={1} h={400} maw={500}>
-            <Resizer>
-              <UsMap setFilter={setFilter} filter={filter} width={800} height={600} />
-            </Resizer>
-          </Flex>
-          {filter.rtoIndex !== null && <Title>{RTO_NAME[filter.rtoIndex]}</Title>}
-        </Flex>
         <Select label={'Industry Location'} data={MISO_REGION} value={'None'} />
         <Select
           label={'Battery Storage Choice'}
