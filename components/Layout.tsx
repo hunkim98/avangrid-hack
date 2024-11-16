@@ -49,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
               visibleFrom="sm"
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                router.push('/admin/list')
+                router.push('/')
               }}
             >
               Avangrid Optimizer
