@@ -1,10 +1,12 @@
+import Layout from '@/components/Layout'
+
 interface IndexPageProps {}
 
 const IndexPage: React.FC<IndexPageProps> = () => {
   return (
-    <div>
+    <Layout>
       <h1>Index Page</h1>
-    </div>
+    </Layout>
   )
 }
 
