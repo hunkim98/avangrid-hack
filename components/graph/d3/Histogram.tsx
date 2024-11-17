@@ -40,6 +40,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
     x: 0,
     y: 0,
   })
+
   const xRef = useRef<d3.ScaleBand<string>>()
   const yRef = useRef<d3.ScaleLinear<number, number>>()
 
@@ -231,7 +232,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
         if (index >= 0 && index < data.length) {
           setTooltip((prev) => ({
             ...prev,
-            content: `${data[index][0]}: ${data[index][1]}`,
+            content: `${data[index][0]}: $${Math.round(data[index][1]).toLocaleString()}`,
             opacity: 0.5,
           }))
           const x = xScale(data[index][0]) as number
@@ -255,6 +256,10 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
           opacity: 0,
         }))
       })
+    return () => {
+      // claer the svg
+      svgContainer.selectAll('g').remove()
+    }
   }, [data, width, height, margin, graphId])
 
   useEffect(() => {

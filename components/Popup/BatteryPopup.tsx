@@ -4,6 +4,9 @@ import React from 'react'
 
 function BatteryPopup() {
   const { isOptionOpened, setIsOptionOpened, options, setOptions } = useOptimizerContext()
+  const onCalculate = () => {
+    setIsOptionOpened(false)
+  }
   return (
     <Modal
       opened={isOptionOpened}

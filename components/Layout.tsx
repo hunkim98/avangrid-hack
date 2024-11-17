@@ -60,7 +60,19 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
   }, [filter])
   const onCalculate = useCallback(
     (e: React.MouseEvent) => {
-      console.log('calculate')
+      if (options.batteryType === 'Custom') {
+        if (
+          options.batteryPowerMW === 0 ||
+          options.batteryDurationH === 0 ||
+          options.chargePrice === 0 ||
+          options.dischargePrice === 0 ||
+          options.batteryCycleLife === 0 ||
+          options.discountRate === 0
+        ) {
+          alert('Please fill out all the fields')
+          return
+        }
+      }
       const params: {
         type: string
         battery_power_MW: number
@@ -86,7 +98,6 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
         batter_fixed_OM_cost_per_MW: options.batterFixedOMCostPerMW,
         battery_install_cost_per_MW: options.batteryInstallCostPerMW,
       }
-      console.log('params', params)
       setIsLoading(true)
       axios
         .get('/model/api/calculate', {
@@ -115,8 +126,6 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
             ]
           })
           setIsLoading(false)
-
-          console.log(res)
         })
         .catch((e) => {
           console.log(e)
@@ -239,12 +248,22 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
                 </Flex>
               </Flex>
               <Select
-                data={Batteries.map((battery) => ({
-                  value: battery.name,
-                  label: battery.name,
-                }))}
+                data={[
+                  ...Batteries.map((battery) => ({
+                    value: battery.name,
+                    label: battery.name,
+                  })),
+                  {
+                    value: 'Custom',
+                    label: 'Custom',
+                  },
+                ]}
                 onChange={(e) => {
                   if (!e) {
+                    return
+                  }
+                  if (e === 'Custom') {
+                    setIsOptionOpened(true)
                     return
                   }
                   const batterInfo = Batteries.find((b) => b.name === e)
