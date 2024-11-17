@@ -83,7 +83,7 @@ def get_exact_cost(duration_hr, year, wattage_mw):
     if str(duration_hr) + 'Hr' in cost_data.columns and year in cost_data['Year'].values:
         row = cost_data.loc[cost_data['Year'] == year]
         exact_cost = row[str(duration_hr) + 'Hr'].values[0]
-        scale_factor = wattage_mw / wattage_data.loc[wattage_data['Hour'] == duration_hr, 'Total Megawatt'].values[0]
+        scale_factor = wattage_mw / wattage_data.loc[wattage_data['Hour'] == duration_hr]['Total Megawatt'].values[0]
         return exact_cost * scale_factor
     return None
 
@@ -97,8 +97,7 @@ def predict_total_installed_cost(wattage_mw, duration_hr, year):
         return exact_cost
     # Use regression model for values outside the dataset
     cost_per_mw = model.predict([[year, duration_hr, wattage_mw]])[0]
-    total_cost = cost_per_mw * wattage_mw
-    return total_cost
+    return cost_per_mw
 
 # Example usage
 #wattage = 3  # in megawatts

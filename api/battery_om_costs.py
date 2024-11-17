@@ -96,11 +96,11 @@ def predict_maintenance_cost(wattage_mw, duration_hr, year):
     # Check for exact cost
     exact_cost_per_kw = get_exact_cost(year, duration_hr)
     if exact_cost_per_kw is not None:
-        return exact_cost_per_kw * wattage_mw * 1000  # Convert MW to kW
+        return exact_cost_per_kw * wattage_mw * 1000 / 1.81  # Convert MW to kW
     
     # Otherwise, use regression
     cost_per_kw_yr = model.predict([[year, duration_hr]])[0]
-    return cost_per_kw_yr * wattage_mw * 1000
+    return cost_per_kw_yr * wattage_mw * 1000 / 1.81
 
 # Example usage
 # %wattage = 1.81  # in megawatts
