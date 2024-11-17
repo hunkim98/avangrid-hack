@@ -19,7 +19,13 @@ const IndexPage: React.FC<IndexPageProps> = () => {
     <Layout>
       <Flex direction={'column'} justify={'center'} gap={10}>
         {results.map((result, index) => (
-          <ResultItem key={index} {...result} />
+          <ResultItem
+            key={index}
+            {...result}
+            isLast={index === results.length - 1}
+            index={index}
+            graphId={(result.title + index.toString()).replace(' ', '')}
+          />
         ))}
       </Flex>
     </Layout>

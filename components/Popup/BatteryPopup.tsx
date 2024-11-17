@@ -14,20 +14,20 @@ function BatteryPopup() {
     >
       <Flex direction={'column'} gap={10}>
         <NumberInput
-          label={'Battery Hour'}
+          label={'Battery Hours (H)'}
           suffix="hr"
           onChange={(e) => {
-            setOptions({ ...options, batteryHour: e as number })
+            setOptions({ ...options, batteryDurationH: e as number })
           }}
-          value={options.batteryHour}
+          value={options.batteryDurationH}
         />
         <NumberInput
-          label={'Battery MW'}
+          label={'Battery Power (MW)'}
           suffix="MW"
           onChange={(e) => {
-            setOptions({ ...options, batteryMW: e as number })
+            setOptions({ ...options, batteryPowerMW: e as number })
           }}
-          value={options.batteryMW}
+          value={options.batteryPowerMW}
         />
         <NumberInput
           label={'Battery Install Cost Per MW'}
@@ -36,14 +36,6 @@ function BatteryPopup() {
           }}
           suffix="$/MW"
           value={options.batteryInstallCostPerMW}
-        />
-        <NumberInput
-          label={'Battery Degradation'}
-          onChange={(e) => {
-            setOptions({ ...options, batteryDegradation: e as number })
-          }}
-          suffix="%"
-          value={options.batteryDegradation}
         />
         <NumberInput
           label={'Battery Fixed OM Cost Per MW'}
@@ -56,27 +48,32 @@ function BatteryPopup() {
         <NumberInput
           label={'Battery Life Cycle'}
           onChange={(e) => {
-            setOptions({ ...options, batteryLifeCycle: e as number })
+            setOptions({ ...options, batteryCycleLife: e as number })
           }}
-          value={options.batteryLifeCycle}
+          value={options.batteryCycleLife}
         />
         <NumberInput
           label={'Battery Charge Threshold'}
           onChange={(e) => {
-            setOptions({ ...options, batteryChargeThreshold: e as number })
+            setOptions({ ...options, chargePrice: e as number })
           }}
-          prefix="$/MW"
-          value={options.batteryChargeThreshold}
+          suffix="$/MW"
+          value={options.chargePrice}
         />
         <NumberInput
           label={'Battery Discharge Threshold'}
           onChange={(e) => {
-            setOptions({ ...options, batteryDischargeThreshold: e as number })
+            setOptions({ ...options, dischargePrice: e as number })
           }}
-          prefix="$/MW"
-          value={options.batteryDischargeThreshold}
+          suffix="$/MW"
+          value={options.dischargePrice}
         />
-        <Button variant="outline" className="mt-4" onClick={() => setIsOptionOpened(false)}>
+        <Button
+          variant="outline"
+          color="green"
+          className="mt-4"
+          onClick={() => setIsOptionOpened(false)}
+        >
           Calculate
         </Button>
       </Flex>

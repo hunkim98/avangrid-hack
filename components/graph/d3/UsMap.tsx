@@ -28,6 +28,7 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
         setFilter({
           state: null,
           rtoIndex: null,
+          gridName: null,
         })
       }
     }

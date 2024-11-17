@@ -10,13 +10,14 @@ import {
   NumberInput,
   Badge,
 } from '@mantine/core'
-import { ERCOT_REGION, MISO_REGION, PJM_REGION } from '@/data/region'
+import { ERCOT_REGION, MISO_REGION, PJM_REGION, RTO_GRID } from '@/data/region'
 import { useOptimizerContext } from './provider/OptimizerContext'
 import { useFilterContext } from './provider/FilterContext'
 import React, { useCallback, useMemo } from 'react'
 import BatteryPopup from './Popup/BatteryPopup'
 import { useDisclosure } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
+import { Batteries } from '@/data/battery'
 import { RTO, RTO_NAME } from '@/data/rto'
 import Resizer from './graph/d3/Resizer'
 import { Filter } from '@/types/filter'
@@ -138,11 +139,10 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
                   <IconX
                     size={10}
                     onClick={() =>
-                      setFilter((prev: Filter) => {
-                        return {
-                          ...prev,
-                          rtoIndex: null,
-                        }
+                      setFilter({
+                        ...filter,
+                        rtoIndex: null,
+                        state: null,
                       })
                     }
                   />
@@ -159,7 +159,23 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
         </AppShell.Section>
         <AppShell.Section w="100%">
           <Flex direction={'column'} gap={10}>
-            <Select label={'Select Grid'} data={gridData} />
+            <Select
+              label={'Select Grid'}
+              data={gridData}
+              onChange={(e) => {
+                if (!e) {
+                  setFilter({ ...filter, gridName: null })
+                }
+                let rtoIndex = -1
+                for (let i = 0; i < RTO_GRID.length; i++) {
+                  if (RTO_GRID[i].includes(e as string)) {
+                    rtoIndex = i
+                    break
+                  }
+                }
+                setFilter({ ...filter, gridName: e as string })
+              }}
+            />
             <Flex direction={'column'}>
               <Flex justify={'space-between'} align={'center'}>
                 <Text size="sm">Battery Type</Text>
@@ -169,7 +185,29 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
                   </Badge>
                 </Flex>
               </Flex>
-              <Select />
+              <Select
+                data={Batteries.map((battery) => ({
+                  value: battery.name,
+                  label: battery.name,
+                }))}
+                onChange={(e) => {
+                  if (!e) {
+                    return
+                  }
+                  const batterInfo = Batteries.find((b) => b.name === e)
+                  // we set the saved battery info to the options
+                  setOptions({
+                    ...options,
+                    batteryDurationH: batterInfo?.durationH || 0,
+                    batteryPowerMW: batterInfo?.powerMW || 0,
+                    batteryInstallCostPerMW: batterInfo?.batteryInstallCostPerMW || 0,
+                    batterFixedOMCostPerMW: batterInfo?.batterFixedOMCostPerMW || 0,
+                    batteryCycleLife: batterInfo?.cycleLife || 0,
+                    chargePrice: batterInfo?.chargePrice || 0,
+                    dischargePrice: batterInfo?.dischargePrice || 0,
+                  })
+                }}
+              />
             </Flex>
             <NumberInput
               label={'Discount Rate'}
@@ -196,7 +234,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
               value={options.ptc}
               suffix="%"
             />
-            <Button variant="outline" className="mt-4 mb-10" onClick={onCalculate}>
+            <Button variant="outline" className="mt-4 mb-10" onClick={onCalculate} color="green">
               Calculate
             </Button>
           </Flex>

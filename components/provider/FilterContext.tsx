@@ -13,7 +13,7 @@ interface FilterContextElement {
 const FilterContext = createContext<FilterContextElement>({} as FilterContextElement)
 
 const FilterContextProvider: React.FC<FilterContextProps> = ({ children }) => {
-  const [filter, setFilter] = useState<Filter>({ state: null, rtoIndex: null })
+  const [filter, setFilter] = useState<Filter>({ state: null, rtoIndex: null, gridName: null })
 
   return <FilterContext.Provider value={{ filter, setFilter }}>{children}</FilterContext.Provider>
 }

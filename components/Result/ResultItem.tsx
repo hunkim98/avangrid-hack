@@ -1,4 +1,6 @@
-import { Badge, Box, Flex, Text } from '@mantine/core'
+import { IconX, IconXboxA, IconXboxX, IconXxx } from '@tabler/icons-react'
+import { Badge, Box, Divider, Flex, Text } from '@mantine/core'
+import { useResultContext } from '../provider/ResultContext'
 import LabelBarGraph from '../graph/d3/Histogram'
 import Resizer from '../graph/d3/Resizer'
 import React from 'react'
@@ -10,6 +12,8 @@ export interface ResultItemProps {
   yearTotalRevenue: number
   data: Array<[string, number]>
   graphId: string
+  isLast: boolean
+  index: number
 }
 
 const ResultItem: React.FC<ResultItemProps> = ({
@@ -19,9 +23,12 @@ const ResultItem: React.FC<ResultItemProps> = ({
   yearTotalRevenue,
   data,
   graphId,
+  index,
+  isLast = false,
 }) => {
+  const { removeResult } = useResultContext()
   return (
-    <Flex w="100%" h={200} className="relative">
+    <Flex w="100%" className="relative">
       <Flex direction={'column'} miw={200}>
         <Box className="rounded-md outline-1">
           <Badge variant="outline" className="mb-2" color="dark">
@@ -47,16 +54,24 @@ const ResultItem: React.FC<ResultItemProps> = ({
           </Flex>
         </Box>
       </Flex>
+      <Box pos="absolute" right={0} top={0} className="border border-1 z-50">
+        <IconX
+          className="cursor-pointer z-50"
+          onClick={() => {
+            removeResult(index)
+          }}
+        ></IconX>
+      </Box>
       <Resizer width={'100%'}>
         <LabelBarGraph
           data={data}
           width={800}
-          height={450}
+          height={0}
           graphId={graphId}
           margin={{
             top: 20,
             right: 20,
-            bottom: 40,
+            bottom: 20,
             left: 20,
           }}
         />

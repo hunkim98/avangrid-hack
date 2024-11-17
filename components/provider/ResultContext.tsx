@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 import { ResultItemProps } from '../Result/ResultItem'
+import { useLocalStorage } from '@mantine/hooks'
 import { Filter } from '@/types/filter'
 
 interface ResultContextProps {
@@ -9,6 +10,7 @@ interface ResultContextProps {
 interface ResultContextElement {
   results: Array<ResultItemProps>
   setResults: (results: Array<ResultItemProps>) => void
+  removeResult: (index: number) => void
 }
 
 const sampleData: ResultItemProps = {
@@ -31,13 +33,27 @@ const sampleData: ResultItemProps = {
     ['Nov', 1100],
     ['Dec', 1200],
   ],
+  index: 0,
+  isLast: false,
 }
 const ResultContext = createContext<ResultContextElement>({} as ResultContextElement)
 
 const ResultContextProvider: React.FC<ResultContextProps> = ({ children }) => {
-  const [results, setResults] = useState<Array<ResultItemProps>>([sampleData, sampleData])
+  const [results, setResults] = useLocalStorage<Array<ResultItemProps>>({
+    key: 'results',
+    defaultValue: [sampleData, sampleData],
+  })
+  const removeResult = (index: number) => {
+    const newResults = results.filter((_, i) => i !== index)
+    setResults(newResults)
+    console.log(newResults)
+  }
 
-  return <ResultContext.Provider value={{ results, setResults }}>{children}</ResultContext.Provider>
+  return (
+    <ResultContext.Provider value={{ results, setResults, removeResult }}>
+      {children}
+    </ResultContext.Provider>
+  )
 }
 
 const useResultContext = () => {

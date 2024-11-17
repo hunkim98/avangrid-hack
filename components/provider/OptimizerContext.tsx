@@ -6,14 +6,13 @@ interface OptimizerContextProps {
 }
 
 interface OptimizerOptions {
-  batteryHour: number
-  batteryMW: number
+  batteryDurationH: number
+  batteryPowerMW: number
   batteryInstallCostPerMW: number
-  batteryDegradation: number
   batterFixedOMCostPerMW: number
-  batteryLifeCycle: number
-  batteryChargeThreshold: number
-  batteryDischargeThreshold: number
+  batteryCycleLife: number
+  chargePrice: number
+  dischargePrice: number
   itc: number
   ptc: number
   discountRate: number
@@ -31,14 +30,13 @@ const OptimizerContext = createContext<OptimizerContextElement>({} as OptimizerC
 const OptimizerContextProvider: React.FC<OptimizerContextProps> = ({ children }) => {
   const [isOptionOpened, setIsOptionOpened] = useState(false)
   const [options, setOptions] = useState<OptimizerOptions>({
-    batteryHour: 0,
-    batteryMW: 0,
+    batteryDurationH: 0,
+    batteryPowerMW: 0,
     batteryInstallCostPerMW: 0,
-    batteryDegradation: 0,
     batterFixedOMCostPerMW: 0,
-    batteryLifeCycle: 0,
-    batteryChargeThreshold: 0,
-    batteryDischargeThreshold: 0,
+    batteryCycleLife: 0,
+    chargePrice: 0,
+    dischargePrice: 0,
     itc: 0,
     ptc: 0,
     discountRate: 0,

@@ -21,7 +21,6 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
   margin,
   graphId,
 }) => {
-  const BAR_GRAPH_ID = graphId
   const svgContainerRef = useRef<d3.Selection<SVGSVGElement, unknown, HTMLElement, any>>()
   const svgGRef = useRef<d3.Selection<SVGGElement, unknown, HTMLElement, any>>()
   const clipPathRectRef = useRef<d3.Selection<SVGRectElement, unknown, HTMLElement, any>>()
@@ -58,7 +57,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       svgContainerRef.current.attr('width', width).attr('height', height)
     } else {
       svgContainerRef.current = d3
-        .select(`#${BAR_GRAPH_ID}`)
+        .select(`#${graphId}`)
         .append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -76,7 +75,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
     } else {
       clipPathRectRef.current = svg
         .append('clipPath')
-        .attr('id', `clip-area-${BAR_GRAPH_ID}`)
+        .attr('id', `clip-area-${graphId}`)
         .append('rect')
         .attr('width', svgWidth)
         .attr('height', svgHeight)
@@ -84,7 +83,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
 
     const barGroup = barGroupRef.current
       ? barGroupRef.current
-      : (barGroupRef.current = svg.append('g').attr('clip-path', `url(#clip-area-${BAR_GRAPH_ID})`))
+      : (barGroupRef.current = svg.append('g').attr('clip-path', `url(#clip-area-${graphId})`))
           .append('g')
           .attr('class', 'bar-group')
 
@@ -114,7 +113,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       ? behindGroupRef.current
       : (behindGroupRef.current = svg
           .append('g')
-          .attr('clip-path', `url(#clip-area-${BAR_GRAPH_ID})`)
+          .attr('clip-path', `url(#clip-area-${graphId})`)
           .append('g')
           .attr('class', 'behindGroup'))
 
@@ -122,7 +121,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       ? staticBehindGroupRef.current
       : (staticBehindGroupRef.current = svg
           .append('g')
-          .attr('clip-path', `url(#clip-area-${BAR_GRAPH_ID})`)
+          .attr('clip-path', `url(#clip-area-${graphId})`)
           .append('g')
           .attr('class', 'static-behindGroup'))
 
@@ -239,15 +238,15 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
           opacity: 0,
         }))
       })
-  }, [data, width, height, margin])
+  }, [data, width, height, margin, graphId])
 
   useEffect(() => {
     renderGraph()
-  }, [renderGraph])
+  }, [renderGraph, graphId])
 
   return (
     <div
-      id={BAR_GRAPH_ID}
+      id={graphId}
       style={{
         height: height,
       }}
