@@ -1,11 +1,16 @@
 import { useOptimizerContext } from '../provider/OptimizerContext'
 import { Button, Flex, Modal, NumberInput } from '@mantine/core'
+import { useFilterContext } from '../provider/FilterContext'
+import useSearch from '@/hooks/useSearch'
 import React from 'react'
 
 function BatteryPopup() {
   const { isOptionOpened, setIsOptionOpened, options, setOptions } = useOptimizerContext()
+  const { search } = useSearch()
   const onCalculate = () => {
     setIsOptionOpened(false)
+    search('Custom')
+    setOptions({ ...options, batteryType: 'Custom' })
   }
   return (
     <Modal
@@ -55,12 +60,7 @@ function BatteryPopup() {
           }}
           value={options.batteryCycleLife}
         />
-        <Button
-          variant="outline"
-          color="green"
-          className="mt-4"
-          onClick={() => setIsOptionOpened(false)}
-        >
+        <Button variant="outline" color="green" className="mt-4" onClick={onCalculate}>
           Calculate
         </Button>
       </Flex>

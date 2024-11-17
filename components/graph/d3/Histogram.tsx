@@ -114,7 +114,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
     }
     const yScale = d3
       .scaleLinear()
-      .domain([minYValue, maxYValue * 1.2])
+      .domain([0, maxYValue * 1.2])
       .range([svgHeight, 0])
     yRef.current = yScale
 
@@ -149,7 +149,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       .append('rect')
       .attr('class', 'bar')
       .attr('x', (d) => xScale(d[0]) as number)
-      // .attr('y', (d) => (d[1] >= 0 ? yScale(d[1]) : yScale(0))) // Top for positive, base for negative
+      .attr('y', (d) => yScale(Math.max(0, d[1])) as number)
       // .attr('height', (d) => Math.abs(yScale(d[1]) - yScale(0))) // Height based on value
       .attr('width', xScale.bandwidth())
       .attr('fill', (d) => (d[1] >= 0 ? 'steelblue' : 'crimson')) // Different colors
@@ -174,12 +174,10 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       .attr('x', (d) => xScale(d[0]) as number)
       .attr('width', xScale.bandwidth())
       .attr('fill', (d) => (d[1] >= 0 ? '#CEEAAE' : '#FFB6C1'))
-      .attr('y', (d) => (d[1] >= 0 ? yScale(d[1]) : yScale(0)))
-      .attr('height', (d) => Math.abs(yScale(d[1]) - yScale(0)))
       .transition()
       .duration(() => (!isRendered.current ? 0 : 500))
-      .attr('y', (d) => (d[1] >= 0 ? yScale(d[1]) : yScale(0)))
-      .attr('height', (d) => Math.abs(yScale(d[1]) - yScale(0)))
+      .attr('y', (d) => yScale(Math.max(0, d[1])) as number)
+      .attr('height', (d) => Math.abs(yScale(d[1]) - yScale(0))) // Height based on value
     const xTicks = xAxisGroup.selectAll('.tick text')
     // add new line to the text that has a space
     xTicks.each(function (d, i) {

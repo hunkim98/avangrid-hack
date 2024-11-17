@@ -73,7 +73,7 @@ const ResultItem: React.FC<ResultItemProps> = ({
             data={data}
             width={800}
             height={0}
-            graphId={'graph' + index.toString()}
+            graphId={'graph' + Math.round(npv).toString()}
             margin={{
               top: 20,
               right: 20,

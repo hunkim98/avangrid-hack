@@ -20,6 +20,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { Batteries } from '@/data/battery'
 import { RTO, RTO_NAME } from '@/data/rto'
+import useSearch from '@/hooks/useSearch'
 import Resizer from './graph/d3/Resizer'
 import ReactLoading from 'react-loading'
 import { Filter } from '@/types/filter'
@@ -58,83 +59,11 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
       return PJM_REGION
     }
   }, [filter])
-  const onCalculate = useCallback(
-    (e: React.MouseEvent) => {
-      if (options.batteryType === 'Custom') {
-        if (
-          options.batteryPowerMW === 0 ||
-          options.batteryDurationH === 0 ||
-          options.chargePrice === 0 ||
-          options.dischargePrice === 0 ||
-          options.batteryCycleLife === 0 ||
-          options.discountRate === 0
-        ) {
-          alert('Please fill out all the fields')
-          return
-        }
-      }
-      const params: {
-        type: string
-        battery_power_MW: number
-        battery_duration_H: number
-        charge_price: number
-        discharge_price: number
-        cycle_life: number
-        cycle_age: number
-        discount_rate: number
-        site: string
-        battery_install_cost_per_MW?: number
-        batter_fixed_OM_cost_per_MW?: number
-      } = {
-        type: options.batteryType || '',
-        battery_power_MW: options.batteryPowerMW,
-        battery_duration_H: options.batteryDurationH,
-        charge_price: options.chargePrice,
-        discharge_price: options.dischargePrice,
-        cycle_life: options.batteryCycleLife,
-        cycle_age: 0,
-        discount_rate: options.discountRate,
-        site: filter.gridName || '',
-        batter_fixed_OM_cost_per_MW: options.batterFixedOMCostPerMW,
-        battery_install_cost_per_MW: options.batteryInstallCostPerMW,
-      }
-      setIsLoading(true)
-      axios
-        .get('/model/api/calculate', {
-          // .get('https://avangrid-model.vercel.app/api/calculate', {
-          // .get('https://avangrid-model.vercel.app/api/calculate', {
-          params: {
-            ...params,
-          },
-        })
-        .then((res) => {
-          const data = res.data as {
-            npv: number
-            fcf: Array<number>
-            rvn: Object
-          }
-          setResults((prev) => {
-            return [
-              ...prev,
-              {
-                npv: data.npv,
-                lifeYear: Object.keys(data.rvn).length,
-                // data: Object.entries(data.rvn).map((v, i) => [(2023 + i + 1).toString(), v]),
-                data: Object.entries(data.rvn).map((v, i) => [(2023 + i + 1).toString(), v[1]]),
-                type: options.batteryType,
-              },
-            ]
-          })
-          setIsLoading(false)
-        })
-        .catch((e) => {
-          console.log(e)
-          setIsLoading(false)
-        })
-      e.preventDefault()
-    },
-    [filter, options]
-  )
+  const { search } = useSearch()
+  const onCalculate = (e: React.MouseEvent) => {
+    e.preventDefault()
+    search(options.batteryType)
+  }
 
   return (
     <AppShell
@@ -322,7 +251,18 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
               value={options.ptc}
               suffix="%"
             />
-            <Button variant="outline" className="mt-4 mb-10" onClick={onCalculate} color="green">
+            <Button
+              variant="outline"
+              className="mt-4 mb-10"
+              onClick={onCalculate}
+              color="green"
+              disabled={
+                !filter.gridName ||
+                !options.batteryDurationH ||
+                !options.batteryPowerMW ||
+                isLoading
+              }
+            >
               {isLoading ? (
                 // @ts-ignore
                 <ReactLoading type="spin" width={25} height={25} color="red" />
