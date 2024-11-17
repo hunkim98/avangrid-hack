@@ -19,6 +19,7 @@ function BatteryPopup() {
           onChange={(e) => {
             setOptions({ ...options, batteryHour: e as number })
           }}
+          value={options.batteryHour}
         />
         <NumberInput
           label={'Battery MW'}
@@ -26,6 +27,7 @@ function BatteryPopup() {
           onChange={(e) => {
             setOptions({ ...options, batteryMW: e as number })
           }}
+          value={options.batteryMW}
         />
         <NumberInput
           label={'Battery Install Cost Per MW'}
@@ -33,6 +35,7 @@ function BatteryPopup() {
             setOptions({ ...options, batteryInstallCostPerMW: e as number })
           }}
           suffix="$/MW"
+          value={options.batteryInstallCostPerMW}
         />
         <NumberInput
           label={'Battery Degradation'}
@@ -40,6 +43,7 @@ function BatteryPopup() {
             setOptions({ ...options, batteryDegradation: e as number })
           }}
           suffix="%"
+          value={options.batteryDegradation}
         />
         <NumberInput
           label={'Battery Fixed OM Cost Per MW'}
@@ -47,12 +51,14 @@ function BatteryPopup() {
             setOptions({ ...options, batterFixedOMCostPerMW: e as number })
           }}
           suffix="$/MW"
+          value={options.batterFixedOMCostPerMW}
         />
         <NumberInput
           label={'Battery Life Cycle'}
           onChange={(e) => {
             setOptions({ ...options, batteryLifeCycle: e as number })
           }}
+          value={options.batteryLifeCycle}
         />
         <NumberInput
           label={'Battery Charge Threshold'}
@@ -60,6 +66,7 @@ function BatteryPopup() {
             setOptions({ ...options, batteryChargeThreshold: e as number })
           }}
           prefix="$/MW"
+          value={options.batteryChargeThreshold}
         />
         <NumberInput
           label={'Battery Discharge Threshold'}
@@ -67,20 +74,7 @@ function BatteryPopup() {
             setOptions({ ...options, batteryDischargeThreshold: e as number })
           }}
           prefix="$/MW"
-        />
-        <NumberInput
-          label={'ITC'}
-          onChange={(e) => {
-            setOptions({ ...options, itc: e as number })
-          }}
-          suffix="%"
-        />
-        <NumberInput
-          label={'PTC'}
-          onChange={(e) => {
-            setOptions({ ...options, ptc: e as number })
-          }}
-          suffix="%"
+          value={options.batteryDischargeThreshold}
         />
       </Flex>
     </Modal>

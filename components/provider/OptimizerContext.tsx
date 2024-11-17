@@ -16,6 +16,7 @@ interface OptimizerOptions {
   batteryDischargeThreshold: number
   itc: number
   ptc: number
+  discountRate: number
 }
 
 interface OptimizerContextElement {
@@ -40,6 +41,7 @@ const OptimizerContextProvider: React.FC<OptimizerContextProps> = ({ children })
     batteryDischargeThreshold: 0,
     itc: 0,
     ptc: 0,
+    discountRate: 0,
   })
 
   return (

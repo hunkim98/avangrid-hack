@@ -1,14 +1,26 @@
-import { AppShell, Burger, Button, Flex, Title, ScrollArea, Text, Select } from '@mantine/core'
+import {
+  AppShell,
+  Burger,
+  Button,
+  Flex,
+  Title,
+  ScrollArea,
+  Text,
+  Select,
+  NumberInput,
+} from '@mantine/core'
+import { ERCOT_REGION, MISO_REGION, PJM_REGION } from '@/data/region'
 import { useOptimizerContext } from './provider/OptimizerContext'
 import { useFilterContext } from './provider/FilterContext'
+import React, { useCallback, useMemo } from 'react'
 import BatteryPopup from './Popup/BatteryPopup'
 import { useDisclosure } from '@mantine/hooks'
-import React, { useCallback } from 'react'
 import Resizer from './graph/d3/Resizer'
 import { useRouter } from 'next/router'
 import { HeaderHeight } from './config'
 import UsMap from './graph/d3/UsMap'
 import Link from 'next/link'
+import axios from 'axios'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -19,11 +31,35 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
   const [opened, { toggle }] = useDisclosure()
   const router = useRouter()
-  const currentRoute = router.asPath
   const { filter, setFilter } = useFilterContext()
-  const { setIsOptionOpened } = useOptimizerContext()
+  const { setIsOptionOpened, setOptions, options } = useOptimizerContext()
   const onClickMoreOptions = useCallback(() => {
     setIsOptionOpened(true)
+  }, [])
+  const gridData = useMemo(() => {
+    if (filter.rtoIndex === null) {
+      return [...MISO_REGION, ...ERCOT_REGION, ...PJM_REGION]
+    } else {
+      if (filter.rtoIndex === 0) {
+        return MISO_REGION
+      } else if (filter.rtoIndex === 1) {
+        return ERCOT_REGION
+      }
+      return PJM_REGION
+    }
+  }, [filter])
+  const onCalculate = useCallback(() => {
+    console.log('calculate')
+    axios
+      .get('/api/optimize', {
+        params: {
+          filter,
+          options,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+      })
   }, [])
 
   return (
@@ -69,7 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
           </Flex>
         </Flex>
       </AppShell.Header>
-      <AppShell.Navbar p="sm" bg={navbarBg}>
+      <AppShell.Navbar p="sm" bg={navbarBg} className="overflow-auto">
         <AppShell.Section w="100%">
           <Text>Select RTO</Text>
           <Flex h={200}>
@@ -80,7 +116,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
         </AppShell.Section>
         <AppShell.Section w="100%">
           <Flex direction={'column'} gap={10}>
-            <Select label={'Select Grid'} />
+            <Select label={'Select Grid'} data={gridData} />
             <Flex direction={'column'}>
               <Flex justify={'space-between'}>
                 <Text size="sm">Select Battery</Text>
@@ -90,7 +126,33 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
               </Flex>
               <Select />
             </Flex>
-            <Select label={'Select Battery'} />
+            <NumberInput
+              label={'Discount Rate'}
+              onChange={(e) => {
+                setOptions({ ...options, discountRate: e as number })
+              }}
+              value={options.discountRate}
+              suffix="%"
+            />
+            <NumberInput
+              label={'ITC'}
+              onChange={(e) => {
+                setOptions({ ...options, itc: e as number })
+              }}
+              value={options.itc}
+              suffix="%"
+            />
+            <NumberInput
+              label={'PTC'}
+              onChange={(e) => {
+                setOptions({ ...options, ptc: e as number })
+              }}
+              value={options.ptc}
+              suffix="%"
+            />
+            <Button variant="outline" className="mt-4 mb-10" onClick={onCalculate}>
+              Calculate
+            </Button>
           </Flex>
         </AppShell.Section>
         <AppShell.Section grow component={ScrollArea}></AppShell.Section>
