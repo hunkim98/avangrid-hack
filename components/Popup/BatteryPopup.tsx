@@ -1,5 +1,5 @@
 import { useOptimizerContext } from '../provider/OptimizerContext'
-import { Flex, Modal, NumberInput } from '@mantine/core'
+import { Button, Flex, Modal, NumberInput } from '@mantine/core'
 import React from 'react'
 
 function BatteryPopup() {
@@ -12,7 +12,7 @@ function BatteryPopup() {
       }}
       title="Battery Customization"
     >
-      <Flex direction={'column'}>
+      <Flex direction={'column'} gap={10}>
         <NumberInput
           label={'Battery Hour'}
           suffix="hr"
@@ -76,6 +76,9 @@ function BatteryPopup() {
           prefix="$/MW"
           value={options.batteryDischargeThreshold}
         />
+        <Button variant="outline" className="mt-4" onClick={() => setIsOptionOpened(false)}>
+          Calculate
+        </Button>
       </Flex>
     </Modal>
   )

@@ -11,11 +11,17 @@ interface LabelBarGraphInterface {
     bottom: number
     left: number
   }
+  graphId: string
 }
 
-const BAR_GRAPH_ID = 'barGraph'
-
-const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({ data, width, height, margin }) => {
+const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
+  data,
+  width,
+  height,
+  margin,
+  graphId,
+}) => {
+  const BAR_GRAPH_ID = graphId
   const svgContainerRef = useRef<d3.Selection<SVGSVGElement, unknown, HTMLElement, any>>()
   const svgGRef = useRef<d3.Selection<SVGGElement, unknown, HTMLElement, any>>()
   const clipPathRectRef = useRef<d3.Selection<SVGRectElement, unknown, HTMLElement, any>>()

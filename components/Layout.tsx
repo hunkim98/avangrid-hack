@@ -8,6 +8,7 @@ import {
   Text,
   Select,
   NumberInput,
+  Badge,
 } from '@mantine/core'
 import { ERCOT_REGION, MISO_REGION, PJM_REGION } from '@/data/region'
 import { useOptimizerContext } from './provider/OptimizerContext'
@@ -15,12 +16,16 @@ import { useFilterContext } from './provider/FilterContext'
 import React, { useCallback, useMemo } from 'react'
 import BatteryPopup from './Popup/BatteryPopup'
 import { useDisclosure } from '@mantine/hooks'
+import { IconX } from '@tabler/icons-react'
+import { RTO, RTO_NAME } from '@/data/rto'
 import Resizer from './graph/d3/Resizer'
+import { Filter } from '@/types/filter'
 import { useRouter } from 'next/router'
 import { HeaderHeight } from './config'
 import UsMap from './graph/d3/UsMap'
 import Link from 'next/link'
 import axios from 'axios'
+import * as d3 from 'd3'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -107,7 +112,45 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
       </AppShell.Header>
       <AppShell.Navbar p="sm" bg={navbarBg} className="overflow-auto">
         <AppShell.Section w="100%">
-          <Text>Select RTO</Text>
+          <Flex gap={10}>
+            <Text size="sm" fw={500}>
+              Select RTO
+            </Text>
+            {filter.rtoIndex !== null && (
+              <Badge
+                style={{
+                  backgroundColor: d3
+                    .scaleOrdinal()
+                    .domain(RTO.map((_, i) => i.toString()))
+                    .range(d3.schemeGreens[RTO.length > 9 ? 9 : RTO.length])(
+                    filter.rtoIndex.toString()
+                  ) as string,
+                }}
+              >
+                <Flex
+                  align={'center'}
+                  gap={10}
+                  style={{
+                    color: 'black',
+                  }}
+                >
+                  {RTO_NAME[filter.rtoIndex]}{' '}
+                  <IconX
+                    size={10}
+                    onClick={() =>
+                      setFilter((prev: Filter) => {
+                        return {
+                          ...prev,
+                          rtoIndex: null,
+                        }
+                      })
+                    }
+                  />
+                </Flex>
+              </Badge>
+            )}
+          </Flex>
+
           <Flex h={200}>
             <Resizer>
               <UsMap setFilter={setFilter} filter={filter} width={800} height={600} />
@@ -118,16 +161,19 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
           <Flex direction={'column'} gap={10}>
             <Select label={'Select Grid'} data={gridData} />
             <Flex direction={'column'}>
-              <Flex justify={'space-between'}>
-                <Text size="sm">Select Battery</Text>
+              <Flex justify={'space-between'} align={'center'}>
+                <Text size="sm">Battery Type</Text>
                 <Flex onClick={onClickMoreOptions} className="cursor-pointer">
-                  <Text size="sm">More Options</Text>
+                  <Badge size="sm" className="cursor-pointer" color="green">
+                    Customize
+                  </Badge>
                 </Flex>
               </Flex>
               <Select />
             </Flex>
             <NumberInput
               label={'Discount Rate'}
+              labelProps={{ color: 'white' }}
               onChange={(e) => {
                 setOptions({ ...options, discountRate: e as number })
               }}

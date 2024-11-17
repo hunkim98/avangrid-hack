@@ -7,7 +7,7 @@ interface FilterContextProps {
 
 interface FilterContextElement {
   filter: Filter
-  setFilter: (filter: Filter) => void
+  setFilter: React.Dispatch<React.SetStateAction<Filter>>
 }
 
 const FilterContext = createContext<FilterContextElement>({} as FilterContextElement)

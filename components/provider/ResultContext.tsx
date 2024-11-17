@@ -16,6 +16,7 @@ const sampleData: ResultItemProps = {
   npv: 100,
   irr: 0.1,
   yearTotalRevenue: 100,
+  graphId: 'sample',
   data: [
     ['Jan', 100],
     ['Feb', 200],

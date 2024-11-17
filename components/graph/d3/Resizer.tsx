@@ -47,6 +47,7 @@ const Resizer = <T,>({ children }: Resizer<T>) => {
       style={{
         flex: 1,
         width: '100%',
+        position: 'relative',
       }}
     >
       {enhancedChildren}

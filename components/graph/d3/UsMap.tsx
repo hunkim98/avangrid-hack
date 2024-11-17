@@ -60,13 +60,12 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
     const bounds = path.bounds(geojson)
     const widthScale = (bounds[1][0] - bounds[0][0]) / width
     const heightScale = (bounds[1][1] - bounds[0][1]) / height
-    const fourColor = d3.scaleOrdinal(d3.schemeCategory10)
+    const fourColor = d3.scaleOrdinal(d3.schemeBuPu)
     const colors = ['red', 'blue', 'green', 'orange', 'purple', 'yellow', 'pink']
     const colorScale = d3
       .scaleOrdinal()
       .domain(RTO.map((_, i) => i.toString()))
-      .range(colors) // Colors to map to
-
+      .range(d3.schemeGreens[RTO.length > 9 ? 9 : RTO.length])
     map
       .selectAll('path')
       .data(geojson.features)
@@ -137,6 +136,8 @@ const UsMap: React.FC<UsMapProps> = ({ filter, width, height, setFilter }) => {
         // })
       })
       .on('mousemove', (e, d: any) => {
+        // change the pointer
+        svg.style('cursor', 'pointer')
         // if (!d.properties.name) {
         //   setTooltip((prev) => ({ ...prev, opacity: 0 }))
         //   return
