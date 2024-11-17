@@ -6,7 +6,7 @@ interface OptimizerContextProps {
   children: React.ReactNode
 }
 
-interface OptimizerOptions {
+export interface OptimizerOptions {
   batteryDurationH: number
   batteryPowerMW: number
   batteryInstallCostPerMW: number
@@ -22,7 +22,7 @@ interface OptimizerOptions {
 
 interface OptimizerContextElement {
   options: OptimizerOptions
-  setOptions: (options: OptimizerOptions) => void
+  setOptions: React.Dispatch<React.SetStateAction<OptimizerOptions>>
   isOptionOpened: boolean
   setIsOptionOpened: React.Dispatch<React.SetStateAction<boolean>>
 }

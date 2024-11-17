@@ -28,7 +28,7 @@ const IndexPage: React.FC<IndexPageProps> = () => {
         )}
         {results.map((result, index) => (
           <ResultItem
-            key={index}
+            key={result.createdAt}
             {...result}
             isLast={index === results.length - 1}
             index={index}

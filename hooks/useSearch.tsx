@@ -69,6 +69,10 @@ function useSearch() {
               // data: Object.entries(data.rvn).map((v, i) => [(2023 + i + 1).toString(), v]),
               data: Object.entries(data.rvn).map((v, i) => [(2023 + i + 1).toString(), v[1]]),
               type: batteryType,
+              batteryHour: options.batteryDurationH,
+              batteryMW: options.batteryPowerMW,
+              lifeCycle: options.batteryCycleLife,
+              createdAt: new Date().toISOString(),
             },
           ]
         })

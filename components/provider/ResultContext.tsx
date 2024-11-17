@@ -34,14 +34,18 @@ const sampleData: ResultServerItem = {
     ['Nov', 1100],
     ['Dec', 1200],
   ],
+  batteryHour: 100,
+  batteryMW: 100,
+  lifeCycle: 100,
   type: Batteries[0].name,
+  createdAt: new Date().toISOString(),
 }
 const ResultContext = createContext<ResultContextElement>({} as ResultContextElement)
 
 const ResultContextProvider: React.FC<ResultContextProps> = ({ children }) => {
   const [results, setResults] = useLocalStorage<Array<ResultServerItem>>({
     key: 'results',
-    defaultValue: [sampleData, sampleData],
+    defaultValue: [],
   })
   const [isLoading, setIsLoading] = useState(false)
   const removeResult = (index: number) => {

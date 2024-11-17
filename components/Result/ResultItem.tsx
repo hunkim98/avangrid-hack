@@ -1,5 +1,5 @@
+import { Badge, Blockquote, Box, Divider, Flex, Text, Title } from '@mantine/core'
 import { IconX, IconXboxA, IconXboxX, IconXxx } from '@tabler/icons-react'
-import { Badge, Box, Divider, Flex, Text, Title } from '@mantine/core'
 import { useResultContext } from '../provider/ResultContext'
 import LabelBarGraph from '../graph/d3/Histogram'
 import Resizer from '../graph/d3/Resizer'
@@ -12,6 +12,10 @@ export interface ResultItemProps {
   isLast: boolean
   index: number
   type: null | string
+  batteryHour: number
+  batteryMW: number
+  lifeCycle: number
+  createdAt: string
 }
 
 const ResultItem: React.FC<ResultItemProps> = ({
@@ -21,7 +25,11 @@ const ResultItem: React.FC<ResultItemProps> = ({
   data,
   index,
   type,
+  batteryHour,
+  batteryMW,
+  lifeCycle,
   isLast = false,
+  createdAt,
 }) => {
   const { removeResult } = useResultContext()
   return (
@@ -35,6 +43,15 @@ const ResultItem: React.FC<ResultItemProps> = ({
               </Badge>
             )}
           </Flex>
+          <Blockquote color="green" p={5} mb={10}>
+            <Flex direction={'column'}>
+              <Text size={'sx'}>Battery Hour: {batteryHour} Hr</Text>
+              <Divider />
+              <Text size={'sx'}>Batter Power: {batteryMW} MW</Text>
+              <Divider />
+              <Text size={'sx'}>Battery Cycle: {lifeCycle}</Text>
+            </Flex>
+          </Blockquote>
           <Flex direction={'column'} gap={5}>
             <Flex direction={'column'}>
               <Text size={'xs'}>Net Present Value</Text>
@@ -73,7 +90,14 @@ const ResultItem: React.FC<ResultItemProps> = ({
             data={data}
             width={800}
             height={0}
-            graphId={'graph' + Math.round(npv).toString()}
+            graphId={
+              'graph' +
+              createdAt
+                .replaceAll(':', '')
+                .replaceAll(' ', '')
+                .replaceAll('-', '')
+                .replaceAll('.', '')
+            }
             margin={{
               top: 20,
               right: 20,

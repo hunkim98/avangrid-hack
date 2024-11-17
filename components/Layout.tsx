@@ -10,8 +10,8 @@ import {
   NumberInput,
   Badge,
 } from '@mantine/core'
+import { OptimizerOptions, useOptimizerContext } from './provider/OptimizerContext'
 import { ERCOT_REGION, MISO_REGION, PJM_REGION, RTO_GRID } from '@/data/region'
-import { useOptimizerContext } from './provider/OptimizerContext'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useFilterContext } from './provider/FilterContext'
 import { useResultContext } from './provider/ResultContext'
@@ -159,6 +159,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
             <Select
               label={'Select Grid'}
               data={gridData}
+              value={filter.gridName}
               onChange={(e) => {
                 if (!e) {
                   setFilter({ ...filter, gridName: null })
@@ -187,18 +188,22 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
                     label: 'Custom',
                   },
                 ]}
+                value={options.batteryType}
                 onChange={(e) => {
                   if (!e) {
                     return
                   }
                   if (e === 'Custom') {
                     setIsOptionOpened(true)
+                    setOptions((prev) => ({ ...prev, batteryType: e }))
                     return
                   }
+                  setOptions((prev) => ({ ...prev, batteryType: e }))
+                  console.log(e)
                   const batterInfo = Batteries.find((b) => b.name === e)
                   // we set the saved battery info to the options
-                  setOptions({
-                    ...options,
+                  setOptions((prev: OptimizerOptions) => ({
+                    ...prev,
                     batteryDurationH: batterInfo?.durationH || 0,
                     batteryPowerMW: batterInfo?.powerMW || 0,
                     batteryInstallCostPerMW: batterInfo?.batteryInstallCostPerMW || 0,
@@ -206,7 +211,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
                     batteryCycleLife: batterInfo?.cycleLife || 0,
                     chargePrice: batterInfo?.chargePrice || 0,
                     dischargePrice: batterInfo?.dischargePrice || 0,
-                  })
+                  }))
                 }}
               />
             </Flex>
