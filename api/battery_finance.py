@@ -2,6 +2,7 @@ import battery_sim as sim
 import battery_installation_costs as instal
 import battery_om_costs as om
 from datetime import datetime
+import numpy as np
 
 cur_year = datetime.now().year
 
@@ -19,7 +20,14 @@ def calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year
     fcf[0] - install_cost
     return fcf
 
+def calc_npv(discount_rate, site, battery_type, power_MW, dur_H, dis_price, c_price, start_year=cur_year):
+    fcf = calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year)
+    npv = 0.0
+    for t, cash_flow in enumerate(fcf):
+        npv += cash_flow / ((1 + discount_rate) ** t)
+    return npv
+
 
 if __name__ == "__main__":
-    fcf = calc_fcf('Mantero', 'lithium-ion', 10, 5, 50, 15, 2024)
-    print(fcf)
+    npv = calc_npv(0.2, 'howling_gale', 'lithium-ion', 1, 10, 50, 25, 2030)
+    print(npv)
