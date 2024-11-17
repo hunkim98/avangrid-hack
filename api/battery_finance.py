@@ -32,8 +32,8 @@ def calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year
     fcf[0] = fcf[0] - install_cost + itc_value
     return fcf
 
-def calc_npv(discount_rate, site, battery_type, power_MW, dur_H, dis_price, c_price, start_year=cur_year):
-    fcf = calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year)
+def calc_npv(discount_rate, site, battery_type, power_MW, dur_H, dis_price, c_price, start_year=cur_year, install_cost=None, fixed_om_cost=None):
+    fcf = calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year, install_cost, fixed_om_cost)
     npv = 0.0
     for t, cash_flow in enumerate(fcf):
         npv += cash_flow / ((1 + discount_rate) ** t)
