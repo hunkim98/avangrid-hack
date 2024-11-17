@@ -20,7 +20,7 @@ export interface ResultItemProps {
 const ResultItem: React.FC<ResultItemProps> = ({
   title,
   npv,
-  irr,
+  // irr,
   yearTotalRevenue,
   data,
   graphId,
@@ -47,12 +47,12 @@ const ResultItem: React.FC<ResultItemProps> = ({
               ${npv.toLocaleString()}
             </Text>
           </Flex>
-          <Flex direction={'column'}>
+          {/* <Flex direction={'column'}>
             <Text size={'xs'}>Internal Revenue Return</Text>
             <Text fw={'bold'} size="xl" mt={-5}>
               {irr}%
             </Text>
-          </Flex>
+          </Flex> */}
           <Flex direction={'column'}>
             <Text size={'xs'}>Yearly Revenue</Text>
             <Text fw={'bold'} size="xl" mt={-5}>
