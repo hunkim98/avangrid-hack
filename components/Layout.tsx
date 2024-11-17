@@ -85,7 +85,9 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
       }
       console.log('params', params)
       axios
-        .get('/api/calculate', {
+        .get('/model/api/calculate', {
+          // .get('https://avangrid-model.vercel.app/api/calculate', {
+          // .get('https://avangrid-model.vercel.app/api/calculate', {
           params: {
             ...params,
           },
