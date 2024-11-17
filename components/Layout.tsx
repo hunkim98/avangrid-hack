@@ -12,14 +12,16 @@ import {
 } from '@mantine/core'
 import { ERCOT_REGION, MISO_REGION, PJM_REGION, RTO_GRID } from '@/data/region'
 import { useOptimizerContext } from './provider/OptimizerContext'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useFilterContext } from './provider/FilterContext'
-import React, { useCallback, useMemo } from 'react'
+import { useResultContext } from './provider/ResultContext'
 import BatteryPopup from './Popup/BatteryPopup'
 import { useDisclosure } from '@mantine/hooks'
 import { IconX } from '@tabler/icons-react'
 import { Batteries } from '@/data/battery'
 import { RTO, RTO_NAME } from '@/data/rto'
 import Resizer from './graph/d3/Resizer'
+import ReactLoading from 'react-loading'
 import { Filter } from '@/types/filter'
 import { useRouter } from 'next/router'
 import { HeaderHeight } from './config'
@@ -37,6 +39,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
   const [opened, { toggle }] = useDisclosure()
   const router = useRouter()
+  const { setResults, isLoading, setIsLoading } = useResultContext()
 
   const { filter, setFilter } = useFilterContext()
   const { setIsOptionOpened, setOptions, options } = useOptimizerContext()
@@ -84,6 +87,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
         battery_install_cost_per_MW: options.batteryInstallCostPerMW,
       }
       console.log('params', params)
+      setIsLoading(true)
       axios
         .get('/model/api/calculate', {
           // .get('https://avangrid-model.vercel.app/api/calculate', {
@@ -93,7 +97,30 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
           },
         })
         .then((res) => {
+          const data = res.data as {
+            npv: number
+            fcf: Array<number>
+            rvn: Object
+          }
+          setResults((prev) => {
+            return [
+              ...prev,
+              {
+                npv: data.npv,
+                lifeYear: Object.keys(data.rvn).length,
+                // data: Object.entries(data.rvn).map((v, i) => [(2023 + i + 1).toString(), v]),
+                data: Object.entries(data.rvn).map((v, i) => [(2023 + i + 1).toString(), v[1]]),
+                type: options.batteryType,
+              },
+            ]
+          })
+          setIsLoading(false)
+
           console.log(res)
+        })
+        .catch((e) => {
+          console.log(e)
+          setIsLoading(false)
         })
       e.preventDefault()
     },
@@ -277,7 +304,12 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
               suffix="%"
             />
             <Button variant="outline" className="mt-4 mb-10" onClick={onCalculate} color="green">
-              Calculate
+              {isLoading ? (
+                // @ts-ignore
+                <ReactLoading type="spin" width={25} height={25} color="red" />
+              ) : (
+                <Text>Calculate</Text>
+              )}
             </Button>
           </Flex>
         </AppShell.Section>

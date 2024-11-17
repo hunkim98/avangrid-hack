@@ -18,12 +18,9 @@ const IndexPage: React.FC<IndexPageProps> = () => {
 
   return (
     <Layout>
-      <Flex direction={'column'} justify={'center'} gap={10}>
+      <Flex direction={'column'} justify={'center'} gap={25}>
         {results.length === 0 && (
-          <Center
-            // flex={1}
-            h={`calc(100vh-${HeaderHeight}px)`}
-          >
+          <Center>
             <Title order={4} fw={300}>
               Please select a region and the battery type on the left to see its effect
             </Title>
@@ -35,7 +32,7 @@ const IndexPage: React.FC<IndexPageProps> = () => {
             {...result}
             isLast={index === results.length - 1}
             index={index}
-            graphId={(result.title + index.toString()).replace(' ', '')}
+            lifeYear={result.lifeYear || 0}
           />
         ))}
       </Flex>

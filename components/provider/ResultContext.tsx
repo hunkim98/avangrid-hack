@@ -8,18 +8,18 @@ interface ResultContextProps {
   children: React.ReactNode
 }
 
+export type ResultServerItem = Omit<ResultItemProps, 'isLast' | 'index' | 'graphId'>
 interface ResultContextElement {
-  results: Array<ResultItemProps>
-  setResults: (results: Array<ResultItemProps>) => void
+  results: Array<ResultServerItem>
+  setResults: React.Dispatch<React.SetStateAction<Array<ResultServerItem>>>
   removeResult: (index: number) => void
+  isLoading: boolean
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const sampleData: ResultItemProps = {
-  title: 'Sample Data',
+const sampleData: ResultServerItem = {
   npv: 100,
-  irr: 0.1,
-  yearTotalRevenue: 100,
-  graphId: 'sample',
+  lifeYear: 100,
   data: [
     ['Jan', 100],
     ['Feb', 200],
@@ -34,17 +34,16 @@ const sampleData: ResultItemProps = {
     ['Nov', 1100],
     ['Dec', 1200],
   ],
-  index: 0,
-  isLast: false,
   type: Batteries[0].name,
 }
 const ResultContext = createContext<ResultContextElement>({} as ResultContextElement)
 
 const ResultContextProvider: React.FC<ResultContextProps> = ({ children }) => {
-  const [results, setResults] = useLocalStorage<Array<ResultItemProps>>({
+  const [results, setResults] = useLocalStorage<Array<ResultServerItem>>({
     key: 'results',
     defaultValue: [sampleData, sampleData],
   })
+  const [isLoading, setIsLoading] = useState(false)
   const removeResult = (index: number) => {
     const newResults = results.filter((_, i) => i !== index)
     setResults(newResults)
@@ -52,7 +51,7 @@ const ResultContextProvider: React.FC<ResultContextProps> = ({ children }) => {
   }
 
   return (
-    <ResultContext.Provider value={{ results, setResults, removeResult }}>
+    <ResultContext.Provider value={{ results, setResults, removeResult, isLoading, setIsLoading }}>
       {children}
     </ResultContext.Provider>
   )

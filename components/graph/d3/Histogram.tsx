@@ -44,9 +44,14 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
   const yRef = useRef<d3.ScaleLinear<number, number>>()
 
   const renderGraph = useCallback(() => {
-    const fixedMargin = { ...margin }
+    let maxYValue = d3.max(data, (d) => d[1]) as number
+    const minYValue = d3.min(data, (d) => d[1]) as number
 
-    const maxYValue = d3.max(data, (d) => d[1]) as number
+    const digitCountInY = maxYValue.toString().length
+    const fixedMargin = { ...margin }
+    if (digitCountInY > 3) {
+      fixedMargin.left += 5 * (digitCountInY - 4)
+    }
 
     const svgWidth = width - fixedMargin.left - fixedMargin.right
     const svgHeight = height - fixedMargin.top - fixedMargin.bottom
@@ -103,9 +108,12 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
     xRef.current = xScale
 
     // let yScale: d3.ScaleLinear<number, number>;
+    if (maxYValue < 0) {
+      maxYValue = 100
+    }
     const yScale = d3
       .scaleLinear()
-      .domain([0, maxYValue * 1.2])
+      .domain([minYValue, maxYValue * 1.2])
       .range([svgHeight, 0])
     yRef.current = yScale
 
@@ -125,43 +133,52 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
           .append('g')
           .attr('class', 'static-behindGroup'))
 
-    xAxisGroup
-      .attr('transform', `translate(0,${svgHeight})`)
-      .style('opacity', 0.5)
-      .call(d3.axisBottom(xScale))
+    // xAxisGroup
+    //   .attr('transform', `translate(0,${svgHeight})`)
+    //   .style('opacity', 0.5)
+    //   .call(d3.axisBottom(xScale))
 
     yAxisGroup.attr('transform', `translate(0,0)`).style('opacity', 0.5).call(d3.axisLeft(yScale))
 
     // barGroup.selectAll("rect").remove();
-    const bars = barGroup.selectAll(`rect.base`).data(data)
+    const bars = barGroup
+      .selectAll(`rect.base`)
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('class', 'bar')
+      .attr('x', (d) => xScale(d[0]) as number)
+      // .attr('y', (d) => (d[1] >= 0 ? yScale(d[1]) : yScale(0))) // Top for positive, base for negative
+      // .attr('height', (d) => Math.abs(yScale(d[1]) - yScale(0))) // Height based on value
+      .attr('width', xScale.bandwidth())
+      .attr('fill', (d) => (d[1] >= 0 ? 'steelblue' : 'crimson')) // Different colors
+    // add horizontal line through 0 y
+    const zeroLine = barGroup.selectAll('line.zero').data([0])
+    zeroLine
+      .enter()
+      .append('line')
+      .attr('class', 'zero')
+      .merge(zeroLine as any)
+      .attr('x1', 0)
+      .attr('x2', svgWidth)
+      .attr('y1', (d) => yScale(d) as number)
+      .attr('y2', (d) => yScale(d) as number)
+      .attr('stroke', 'rgba(0,0,0,0.2)')
 
     bars
       .enter()
       .append('rect')
-      .attr('class', `base`)
+      .attr('class', 'base')
       .merge(bars as any)
       .attr('x', (d) => xScale(d[0]) as number)
-      .attr('y', (d) => svgHeight)
       .attr('width', xScale.bandwidth())
-      .attr('fill', (d, i) => {
-        return '#CEEAAE'
-      })
-      // start from bottom
+      .attr('fill', (d) => (d[1] >= 0 ? '#CEEAAE' : '#FFB6C1'))
+      .attr('y', (d) => (d[1] >= 0 ? yScale(d[1]) : yScale(0)))
+      .attr('height', (d) => Math.abs(yScale(d[1]) - yScale(0)))
       .transition()
-      .duration(() => {
-        if (!isRendered.current) {
-          return 0
-        } else {
-          return 500
-        }
-      })
-      .attr('y', (d) => {
-        return yScale(d[1]) as number
-      })
-      .attr('height', (d) => {
-        return (svgHeight - yScale(d[1])) as number
-      })
-
+      .duration(() => (!isRendered.current ? 0 : 500))
+      .attr('y', (d) => (d[1] >= 0 ? yScale(d[1]) : yScale(0)))
+      .attr('height', (d) => Math.abs(yScale(d[1]) - yScale(0)))
     const xTicks = xAxisGroup.selectAll('.tick text')
     // add new line to the text that has a space
     xTicks.each(function (d, i) {
@@ -245,31 +262,33 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
   }, [renderGraph, graphId])
 
   return (
-    <div
-      id={graphId}
-      style={{
-        height: height,
-      }}
-    >
-      <pre
-        className="tooltip"
+    <>
+      <div
+        id={graphId}
         style={{
-          zIndex: 100,
-          opacity: tooltip.opacity,
-          position: 'absolute',
-          left: `${tooltip.x}px`,
-          top: `${tooltip.y}px`,
-          transform: 'translate(-50%,0%)',
-          backgroundColor: 'white',
-          border: '1px solid rgba(0,0,0,0.1)',
-          padding: '8px',
-          pointerEvents: 'none', // Makes the tooltip not block mouse events
-          transition: 'opacity 0.3s ease, left 0.2s ease, top 0.2s ease', // Smooth transitions
+          height: height,
         }}
       >
-        {tooltip.content}
-      </pre>
-    </div>
+        <pre
+          className="tooltip"
+          style={{
+            zIndex: 100,
+            opacity: tooltip.opacity,
+            position: 'absolute',
+            left: `${tooltip.x}px`,
+            top: `${tooltip.y}px`,
+            transform: 'translate(-50%,0%)',
+            backgroundColor: 'white',
+            border: '1px solid rgba(0,0,0,0.1)',
+            padding: '8px',
+            pointerEvents: 'none', // Makes the tooltip not block mouse events
+            transition: 'opacity 0.3s ease, left 0.2s ease, top 0.2s ease', // Smooth transitions
+          }}
+        >
+          {tooltip.content}
+        </pre>
+      </div>
+    </>
   )
 }
 
