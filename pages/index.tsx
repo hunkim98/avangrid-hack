@@ -33,6 +33,7 @@ const IndexPage: React.FC<IndexPageProps> = () => {
             isLast={index === results.length - 1}
             index={index}
             lifeYear={result.lifeYear || 0}
+            createdAt={result.createdAt ?? new Date().toISOString()}
           />
         ))}
       </Flex>
