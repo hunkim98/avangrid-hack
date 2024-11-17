@@ -32,6 +32,9 @@ const ResultItem: React.FC<ResultItemProps> = ({
   createdAt,
 }) => {
   const { removeResult } = useResultContext()
+  if (!createdAt) {
+    return null
+  }
   return (
     <Flex w="100%" className="relative">
       <Flex direction={'column'} miw={200}>
