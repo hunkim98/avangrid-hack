@@ -37,6 +37,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
   const [opened, { toggle }] = useDisclosure()
   const router = useRouter()
+
   const { filter, setFilter } = useFilterContext()
   const { setIsOptionOpened, setOptions, options } = useOptimizerContext()
   const onClickMoreOptions = useCallback(() => {
@@ -54,19 +55,48 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
       return PJM_REGION
     }
   }, [filter])
-  const onCalculate = useCallback(() => {
-    console.log('calculate')
-    axios
-      .get('/api/optimize', {
-        params: {
-          filter,
-          options,
-        },
-      })
-      .then((res) => {
-        console.log(res)
-      })
-  }, [])
+  const onCalculate = useCallback(
+    (e: React.MouseEvent) => {
+      console.log('calculate')
+      const params: {
+        type: string
+        battery_power_MW: number
+        battery_duration_H: number
+        charge_price: number
+        discharge_price: number
+        cycle_life: number
+        cycle_age: number
+        discount_rate: number
+        site: string
+        battery_install_cost_per_MW?: number
+        batter_fixed_OM_cost_per_MW?: number
+      } = {
+        type: options.batteryType || '',
+        battery_power_MW: options.batteryPowerMW,
+        battery_duration_H: options.batteryDurationH,
+        charge_price: options.chargePrice,
+        discharge_price: options.dischargePrice,
+        cycle_life: options.batteryCycleLife,
+        cycle_age: 0,
+        discount_rate: options.discountRate,
+        site: filter.gridName || '',
+        batter_fixed_OM_cost_per_MW: options.batterFixedOMCostPerMW,
+        battery_install_cost_per_MW: options.batteryInstallCostPerMW,
+      }
+      console.log('params', params)
+      axios
+        .get('/api/calculate', {
+          params: {
+            ...params,
+          },
+        })
+        .then((res) => {
+          console.log(res)
+        })
+      e.preventDefault()
+    },
+    [filter, options]
+  )
 
   return (
     <AppShell
@@ -166,13 +196,7 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
                 if (!e) {
                   setFilter({ ...filter, gridName: null })
                 }
-                let rtoIndex = -1
-                for (let i = 0; i < RTO_GRID.length; i++) {
-                  if (RTO_GRID[i].includes(e as string)) {
-                    rtoIndex = i
-                    break
-                  }
-                }
+                console.log(e)
                 setFilter({ ...filter, gridName: e as string })
               }}
             />

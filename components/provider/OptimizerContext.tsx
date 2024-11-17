@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react'
+import { Batteries } from '@/data/battery'
 import { Filter } from '@/types/filter'
 
 interface OptimizerContextProps {
@@ -16,6 +17,7 @@ interface OptimizerOptions {
   itc: number
   ptc: number
   discountRate: number
+  batteryType: string
 }
 
 interface OptimizerContextElement {
@@ -40,6 +42,7 @@ const OptimizerContextProvider: React.FC<OptimizerContextProps> = ({ children })
     itc: 0,
     ptc: 0,
     discountRate: 6,
+    batteryType: Batteries[0].name.split('(')[0].trim(),
   })
 
   return (

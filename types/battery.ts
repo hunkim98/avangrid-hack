@@ -5,6 +5,6 @@ export interface Battery {
   dischargePrice: number
   chargePrice: number
   cycleLife: number
-  batteryInstallCostPerMW: number
-  batterFixedOMCostPerMW: number
+  batteryInstallCostPerMW?: number
+  batterFixedOMCostPerMW?: number
 }
