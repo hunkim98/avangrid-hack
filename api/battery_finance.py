@@ -7,9 +7,10 @@ import numpy as np
 cur_year = datetime.now().year
 
 
-def calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year=cur_year):
+def calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year=cur_year, itc_rate=0.06):
     life_annual_revenue = sim.revenue_calc(site, battery_type, power_MW, dur_H, dis_price, c_price)
     install_cost = instal.predict_total_installed_cost(power_MW, dur_H, start_year)
+    itc_value = install_cost * itc_rate
     fcf = []
     for i in life_annual_revenue.keys():
         year_num = int(i.split('_')[1])
@@ -17,7 +18,7 @@ def calc_fcf(site, battery_type, power_MW, dur_H, dis_price, c_price, start_year
         om_cost = om.predict_maintenance_cost(power_MW, dur_H, year)
         fcf.append(life_annual_revenue[i] - om_cost)
 
-    fcf[0] - install_cost
+    fcf[0] = fcf[0] - install_cost + itc_value
     return fcf
 
 def calc_npv(discount_rate, site, battery_type, power_MW, dur_H, dis_price, c_price, start_year=cur_year):
