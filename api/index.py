@@ -1,5 +1,4 @@
 from flask import Flask, request
-import numpy as np
 import pandas as pd
 from pathlib import Path
 from battery_sim import revenue_calc

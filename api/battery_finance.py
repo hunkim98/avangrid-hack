@@ -3,7 +3,6 @@ import battery_sim as sim
 import battery_installation_costs as instal
 import battery_om_costs as om
 from datetime import datetime
-import numpy as np
 
 cur_year = datetime.now().year
 
