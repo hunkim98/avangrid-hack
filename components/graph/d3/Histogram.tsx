@@ -31,6 +31,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
   const staticBehindGroupRef = useRef<d3.Selection<SVGGElement, unknown, HTMLElement, any>>()
   const behindGroupRectRef = useRef<d3.Selection<SVGRectElement, unknown, HTMLElement, any>>()
   const staticBehindGroupRectRef = useRef<d3.Selection<SVGRectElement, unknown, HTMLElement, any>>()
+  const GRAPH_ID = 'GRAPH' + graphId
 
   const isRendered = useRef(false)
 
@@ -63,7 +64,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       svgContainerRef.current.attr('width', width).attr('height', height)
     } else {
       svgContainerRef.current = d3
-        .select(`#${graphId}`)
+        .select(`#${GRAPH_ID}`)
         .append('svg')
         .attr('width', width)
         .attr('height', height)
@@ -81,7 +82,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
     } else {
       clipPathRectRef.current = svg
         .append('clipPath')
-        .attr('id', `clip-area-${graphId}`)
+        .attr('id', `clip-area-${GRAPH_ID}`)
         .append('rect')
         .attr('width', svgWidth)
         .attr('height', svgHeight)
@@ -89,7 +90,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
 
     const barGroup = barGroupRef.current
       ? barGroupRef.current
-      : (barGroupRef.current = svg.append('g').attr('clip-path', `url(#clip-area-${graphId})`))
+      : (barGroupRef.current = svg.append('g').attr('clip-path', `url(#clip-area-${GRAPH_ID})`))
           .append('g')
           .attr('class', 'bar-group')
 
@@ -122,7 +123,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       ? behindGroupRef.current
       : (behindGroupRef.current = svg
           .append('g')
-          .attr('clip-path', `url(#clip-area-${graphId})`)
+          .attr('clip-path', `url(#clip-area-${GRAPH_ID})`)
           .append('g')
           .attr('class', 'behindGroup'))
 
@@ -130,7 +131,7 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       ? staticBehindGroupRef.current
       : (staticBehindGroupRef.current = svg
           .append('g')
-          .attr('clip-path', `url(#clip-area-${graphId})`)
+          .attr('clip-path', `url(#clip-area-${GRAPH_ID})`)
           .append('g')
           .attr('class', 'static-behindGroup'))
 
@@ -258,16 +259,16 @@ const LabelBarGraph: React.FC<LabelBarGraphInterface> = ({
       // claer the svg
       svgContainer.selectAll('g').remove()
     }
-  }, [data, width, height, margin, graphId])
+  }, [data, width, height, margin, GRAPH_ID])
 
   useEffect(() => {
     renderGraph()
-  }, [renderGraph, graphId])
+  }, [renderGraph, GRAPH_ID])
 
   return (
     <>
       <div
-        id={graphId}
+        id={GRAPH_ID}
         style={{
           height: height,
         }}
