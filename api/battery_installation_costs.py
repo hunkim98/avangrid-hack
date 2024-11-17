@@ -1,7 +1,7 @@
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+import numpy as np
 
-# Data for yearly installed costs
+# Data for yearly installed costs (same as before)
 data = {
     "Year": list(range(2022, 2051)),
     "1Hr": [
@@ -173,7 +173,7 @@ wattage_data = pd.DataFrame(wattage_data)
 
 # Reshape the cost data into a long format
 melted_data = cost_data.melt(
-    id_vars=["Year"], var_name="DurationHr", value_name="CostPerMW"
+    id_vars=["Year"], var_name="DurationHr", value_name="TotalCost"
 )
 
 # Convert DurationHr to numeric (removing 'Hr')
@@ -182,17 +182,21 @@ melted_data["DurationHr"] = (
 )
 
 # Merge the wattage data based on the duration (Hour column)
-melted_data = melted_data.merge(wattage_data, left_on="DurationHr", right_on="Hour")
+melted_data = melted_data.merge(
+    wattage_data, left_on="DurationHr", right_on="Hour", how="left"
+)
 
 # Prepare the data for the regression model
 X = melted_data[
     ["Year", "DurationHr", "Total Megawatt"]
-]  # Features: Year, Duration, Wattage
-y = melted_data["CostPerMW"]  # Target: Cost per MW
+].values  # Features: Year, Duration, Wattage
+y = melted_data["TotalCost"].values  # Target: Total Cost
 
-# Train a linear regression model
-model = LinearRegression()
-model.fit(X, y)
+# Add bias term to X for linear regression
+X_b = np.c_[np.ones((X.shape[0], 1)), X]  # Add bias term (column of 1s)
+
+# Compute regression coefficients using least squares solution
+theta, residuals, rank, s = np.linalg.lstsq(X_b, y, rcond=None)
 
 
 # Define a function to retrieve exact cost if it exists in the dataset
@@ -202,18 +206,16 @@ def get_exact_cost(duration_hr, year, wattage_mw):
         and year in cost_data["Year"].values
     ):
         row = cost_data.loc[cost_data["Year"] == year]
-        exact_cost = row[str(duration_hr) + "Hr"].values[0]
-        scale_factor = (
-            wattage_mw
-            / wattage_data.loc[wattage_data["Hour"] == duration_hr][
-                "Total Megawatt"
-            ].values[0]
-        )
-        return exact_cost * scale_factor
+        exact_total_cost = row[str(duration_hr) + "Hr"].values[0]
+        base_wattage = wattage_data.loc[wattage_data["Hour"] == duration_hr][
+            "Total Megawatt"
+        ].values[0]
+        scale_factor = wattage_mw / base_wattage
+        return exact_total_cost * scale_factor
     return None
 
 
-# Define a function to predict the cost
+# Define a function to predict the total installed cost
 def predict_total_installed_cost(wattage_mw, duration_hr, year):
     """
     Predict the total installed cost based on wattage, storage duration, and year.
@@ -221,14 +223,17 @@ def predict_total_installed_cost(wattage_mw, duration_hr, year):
     exact_cost = get_exact_cost(duration_hr, year, wattage_mw)
     if exact_cost is not None:
         return exact_cost
-    # Use regression model for values outside the dataset
-    cost_per_mw = model.predict([[year, duration_hr, wattage_mw]])[0]
-    return cost_per_mw
+    # Use manual linear regression model for predictions
+    x_new = np.array([1, year, duration_hr, wattage_mw])  # Add bias term
+    total_cost = x_new @ theta  # Linear combination
+    return total_cost
 
 
 # Example usage
-# wattage = 3  # in megawatts
-# duration = 10  # in hours
-# year = 2030  # prediction year
-# predicted_cost = predict_total_installed_cost(wattage, duration, year)
-# print(f"Predicted Installed Cost for {wattage}MW {duration}Hr in {year}: ${predicted_cost:,.2f}")
+wattage = 3  # in megawatts
+duration = 10  # in hours
+year = 2030  # prediction year
+predicted_cost = predict_total_installed_cost(wattage, duration, year)
+print(
+    f"Predicted Installed Cost for {wattage}MW {duration}Hr in {year}: ${predicted_cost:,.2f}"
+)
