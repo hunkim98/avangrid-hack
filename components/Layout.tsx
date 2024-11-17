@@ -219,6 +219,22 @@ const Layout: React.FC<LayoutProps> = ({ children, bodyBg, navbarBg }) => {
               suffix="%"
             />
             <NumberInput
+              label={'Battery Charge Threshold Price ($/MWh)'}
+              onChange={(e) => {
+                setOptions({ ...options, chargePrice: e as number })
+              }}
+              suffix="$/MWh"
+              value={options.chargePrice}
+            />
+            <NumberInput
+              label={'Battery Discharge Threshold Price ($/Mwh)'}
+              onChange={(e) => {
+                setOptions({ ...options, dischargePrice: e as number })
+              }}
+              suffix="$/MWh"
+              value={options.dischargePrice}
+            />
+            <NumberInput
               label={'ITC'}
               onChange={(e) => {
                 setOptions({ ...options, itc: e as number })

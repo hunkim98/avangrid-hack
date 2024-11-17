@@ -35,11 +35,11 @@ const OptimizerContextProvider: React.FC<OptimizerContextProps> = ({ children })
     batteryInstallCostPerMW: 0,
     batterFixedOMCostPerMW: 0,
     batteryCycleLife: 0,
-    chargePrice: 0,
-    dischargePrice: 0,
+    chargePrice: 50,
+    dischargePrice: 15,
     itc: 0,
     ptc: 0,
-    discountRate: 0,
+    discountRate: 6,
   })
 
   return (

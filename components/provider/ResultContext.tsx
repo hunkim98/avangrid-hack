@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react'
 import { ResultItemProps } from '../Result/ResultItem'
 import { useLocalStorage } from '@mantine/hooks'
+import { Batteries } from '@/data/battery'
 import { Filter } from '@/types/filter'
 
 interface ResultContextProps {
@@ -35,6 +36,7 @@ const sampleData: ResultItemProps = {
   ],
   index: 0,
   isLast: false,
+  type: Batteries[0].name,
 }
 const ResultContext = createContext<ResultContextElement>({} as ResultContextElement)
 

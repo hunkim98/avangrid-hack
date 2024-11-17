@@ -52,22 +52,6 @@ function BatteryPopup() {
           }}
           value={options.batteryCycleLife}
         />
-        <NumberInput
-          label={'Battery Charge Threshold'}
-          onChange={(e) => {
-            setOptions({ ...options, chargePrice: e as number })
-          }}
-          suffix="$/MW"
-          value={options.chargePrice}
-        />
-        <NumberInput
-          label={'Battery Discharge Threshold'}
-          onChange={(e) => {
-            setOptions({ ...options, dischargePrice: e as number })
-          }}
-          suffix="$/MW"
-          value={options.dischargePrice}
-        />
         <Button
           variant="outline"
           color="green"

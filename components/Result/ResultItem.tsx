@@ -14,6 +14,7 @@ export interface ResultItemProps {
   graphId: string
   isLast: boolean
   index: number
+  type: null | string
 }
 
 const ResultItem: React.FC<ResultItemProps> = ({
@@ -24,16 +25,22 @@ const ResultItem: React.FC<ResultItemProps> = ({
   data,
   graphId,
   index,
+  type,
   isLast = false,
 }) => {
   const { removeResult } = useResultContext()
+  console.log(type)
   return (
     <Flex w="100%" className="relative">
       <Flex direction={'column'} miw={200}>
         <Box className="rounded-md outline-1">
-          <Badge variant="outline" className="mb-2" color="dark">
-            {title}
-          </Badge>
+          <Flex wrap={'wrap'}>
+            {type && (
+              <Badge variant="outline" className="mb-2" color="dark">
+                {type.split('(')[0]}
+              </Badge>
+            )}
+          </Flex>
           <Flex direction={'column'} gap={5}>
             <Text size={'xs'}>Net Present Value</Text>
             <Text fw={'bold'} size="xl" mt={-5}>
