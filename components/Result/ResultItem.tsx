@@ -91,12 +91,13 @@ const ResultItem: React.FC<ResultItemProps> = ({
             width={800}
             height={0}
             graphId={
-              'graph' +
-              createdAt
-                .replaceAll(':', '')
-                .replaceAll(' ', '')
-                .replaceAll('-', '')
-                .replaceAll('.', '')
+              'graph' + createdAt
+                ? createdAt
+                    .replaceAll(':', '')
+                    .replaceAll(' ', '')
+                    .replaceAll('-', '')
+                    .replaceAll('.', '')
+                : ''
             }
             margin={{
               top: 20,
